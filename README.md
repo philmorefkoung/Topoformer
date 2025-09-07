@@ -1,9 +1,10 @@
 # Topoformer: Topology-Infused Transformers for Medical Imaging
 
-Code for the paper: "Topoformer: Topology-Infused Transformers for Medical Imaging"
-Topoformer consists of two models:
-	TopoGate: Image guided topological embeddings, allowing us to use the best filtration width per dataset
-	TopoSupCon:  An augmentation free variant of Supervised Contrastive Learning via a sliding band filtration sequence
+Code for the paper: "Topoformer: Topology-Infused Transformers for Medical Imaging" <br>
+Topoformer consists of two models: <br>
+- TopoGate: Image guided topological embeddings, allowing us to use the best filtration width per dataset <br>
+- TopoSupCon:  An augmentation free variant of Supervised Contrastive Learning via a sliding band filtration sequence <br>
+
 We also provide the code to our sliding band filtration method.
 
 ---
@@ -28,10 +29,10 @@ pip install -r requirements.txt
 ## Datasets
 
 Datasets we used for our experiments can be found below:
-	*BraTS 2019
-	*BraTS 2021
-	*ODELIA
-	*MedMNIST3D (Fracture and Nodule)
+- BraTS 2019
+- BraTS 2021
+- ODELIA
+- MedMNIST3D (Fracture and Nodule)
 
 Provide two synchronized modalities per split:
 
