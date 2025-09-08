@@ -55,7 +55,7 @@ ODELIA_/M20_test.csv
 - Values are cast to `float32`. If channels are missing, they’re added/expanded.
 
 ### Topological features (`.csv`)
-- Numeric matrix of shape **(N, D)**, default `D=450`
+- Numeric matrix of shape **(N, D)**, D should be a multiple of 150 (50 each for connected components, holes, voids)
 - Obvious ID/label columns are auto-dropped if present (e.g., `id`, `label`, `Modality`…)
 - Non-numeric values raise a clear error
 
