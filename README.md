@@ -29,10 +29,11 @@ pip install -r requirements.txt
 ## Datasets
 
 Datasets we used for our experiments can be found below:
-- BraTS 2019
-- BraTS 2021
-- ODELIA
-- MedMNIST3D (Fracture and Nodule)
+- [BraTS 2019](https://www.med.upenn.edu/cbica/brats2019/data.html)
+- [BraTS 2021](https://www.kaggle.com/datasets/dschettler8845/brats-2021-task1)
+- [ODELIA](https://huggingface.co/datasets/ODELIA-AI/ODELIA-Challenge-2025/tree/main/example-algorithm)
+- [RSNA 2025](https://www.kaggle.com/competitions/rsna-intracranial-aneurysm-detection)
+- [MedMNIST3D](https://medmnist.com/) (Fracture and Nodule)
 
 Provide two synchronized modalities per split:
 
@@ -55,14 +56,23 @@ ODELIA_/M20_test.csv
 
 ### Topological features (`.csv`)
 - Numeric matrix of shape **(N, D)**, default `D=450`
-- Obvious ID/label columns are auto-dropped if present (e.g., `id`, `label`, `BraTS19ID`…)
+- Obvious ID/label columns are auto-dropped if present (e.g., `id`, `label`, `Modality`…)
 - Non-numeric values raise a clear error
 
 ---
 
 ## How to Run
+TopoGate (Example)
+```bash
+python topogate.py \
+  --train_npz nodulemnist3d_64_train.npz \
+  --val_npz   nodulemnist3d_64_val.npz \
+  --train_csvs nodulemnist3d_M20_train.csv nodulemnist3d_M40_train.csv \
+  --val_csvs   nodulemnist3d_M20_val.csv   nodulemnist3d_M40_val.csv \
+  --topo_dim 150 --num_classes 3 --use_pretrained
+```
 
-Basic training (grayscale volumes, default paths):
+Basic training for Topoformer Example (grayscale volumes, default paths):
 ```bash
 python topoformer.py \
   --img_prefix ODELIA_ \
@@ -70,25 +80,9 @@ python topoformer.py \
   --tda_type M20_ \
   --in_ch 1
 ```
-
-### Common options
-```bash
-# Training hyperparams
---batch_size 32 --epochs 100 --lr 1e-4 
-
-# SupCon
---supcon_lambda 0.1 --supcon_temp 0.07
-
-# Topology shape & block norm
---topo_dim 450 --topo_block 150
-
-# Checkpointing
---ckpt_dir checkpoints --run_name topoformer
-```
-
 ---
 
 ## Acknowledgements
 
-We would like to thank the creators of the datasets for their hardwork towards advancing open source medical image analysis, pytorch and torvision for r3d_18 and the kinetics-400 weights, and the authors of SupCon for their inspiration. 
+We would like to thank the dataset creators for their hard work in advancing open-source medical image analysis; the PyTorch and torchvision contributors for r3d_18 and the Kinetics-400 weights; and the authors of Supervised Contrastive Learning (SupCon) for their inspiration.
 
