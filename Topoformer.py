@@ -294,7 +294,12 @@ class SupConLoss(nn.Module):
 
     def forward(self, feats: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
         device = feats.device
-        labels = labels.repeat_interleave(2)  
+        labels = labels.reshape(-1)
+        if feats.ndim != 2 or feats.shape[0] != 2 * labels.numel():
+            raise ValueError("Expected two modality-grouped views per label: [image views, topology views]")
+        # forward() concatenates all image views, then all topology views.
+        # Each modality must therefore receive the full batch label sequence.
+        labels = labels.repeat(2)
         mask = torch.eq(labels.unsqueeze(0), labels.unsqueeze(1)).float().to(device)
 
         logits = feats @ feats.T / self.T
@@ -329,6 +334,7 @@ class Config:
     # Model
     in_ch: int = 1  
     freeze_backbone: bool = False
+    use_pretrained: bool = True
     proj_dim: int = 64
     mlp_hidden: int = 128
     p_drop: float = 0.3
@@ -461,7 +467,7 @@ def evaluate(model: nn.Module, data_loader: DataLoader, num_classes: int, device
 # Main
 # -----------------------------------------------------------------------------
 
-def train(cfg: Config) -> None:
+def train(cfg: Config) -> dict[str, float]:
     set_seed(cfg.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -476,7 +482,7 @@ def train(cfg: Config) -> None:
         proj_dim=cfg.proj_dim,
         mlp_hidden=cfg.mlp_hidden,
         p_drop=cfg.p_drop,
-        pretrained_weights=R3D_18_Weights.KINETICS400_V1,
+        pretrained_weights=R3D_18_Weights.KINETICS400_V1 if cfg.use_pretrained else None,
         freeze_backbone=cfg.freeze_backbone,
     ).to(device)
 
@@ -561,6 +567,7 @@ def train(cfg: Config) -> None:
     if torch.cuda.is_available():
         torch.cuda.synchronize()
     print(f"\nTotal runtime: {time.perf_counter() - t0:.2f} s")
+    return test_metrics
 
 
 def parse_args() -> Config:
@@ -581,6 +588,7 @@ def parse_args() -> Config:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--no_amp", action="store_true", help="Disable mixed-precision")
     parser.add_argument("--freeze_backbone", action="store_true")
+    parser.add_argument("--no_pretrained", action="store_true", help="Initialize the image backbone without downloading pretrained weights")
     parser.add_argument("--grad_clip_norm", type=float, default=1.0)
     parser.add_argument("--ckpt_dir", type=str, default="checkpoints")
     parser.add_argument("--run_name", type=str, default="fusion_supcon_r3d18")
@@ -603,6 +611,7 @@ def parse_args() -> Config:
         seed=args.seed,
         amp=not args.no_amp,
         freeze_backbone=args.freeze_backbone,
+        use_pretrained=not args.no_pretrained,
         grad_clip_norm=args.grad_clip_norm,
         ckpt_dir=args.ckpt_dir,
         run_name=args.run_name,

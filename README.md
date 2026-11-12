@@ -18,6 +18,8 @@ This repository provides three standalone research scripts:
 | [Topoformer.py](Topoformer.py) | A 3D ResNet-18 image branch and an MLP topology branch are trained with classification and supervised contrastive objectives. |
 | [sw_betti.py](sw_betti.py) | Extracts sliding-band Betti features from preprocessed BraTS-style NumPy volumes. |
 | [requirements.txt](requirements.txt) | Python dependencies used by the scripts. |
+| [tests/test_supcon.py](tests/test_supcon.py) | Regression checks for contrastive label/view correspondence. |
+| [scripts/smoke_train.py](scripts/smoke_train.py) | Tiny CPU training and held-out evaluation checks for both models. |
 
 The repository contains training and feature-extraction code. Prepared datasets, pretrained study checkpoints, split manifests, and a locked experiment environment are not included. Consult the paper for the complete experimental protocol and reported results.
 
@@ -33,7 +35,7 @@ conda activate topoformer
 python -m pip install -r requirements.txt
 ```
 
-The requirements specify minimum versions rather than a tested lockfile. Install a compatible PyTorch/torchvision pair for your hardware. GPU training is recommended for 3D volumes; both training scripts select CUDA when available. `Topoformer.py` requests torchvision's Kinetics-400 weights, while `TopoGate.py` does so only with `--use_pretrained`; the first use may download these weights.
+The requirements specify minimum versions rather than a tested lockfile. Install a compatible PyTorch/torchvision pair for your hardware. GPU training is recommended for 3D volumes; both training scripts select CUDA when available. `Topoformer.py` requests torchvision's Kinetics-400 weights by default; use `--no_pretrained` to initialize without them. `TopoGate.py` requests these weights only with `--use_pretrained`. The first pretrained run may download weights.
 
 Inspect the available training options:
 
@@ -102,7 +104,20 @@ Both examples use `--num_workers 0` for portability. Increase it for your traini
 - Keep a sample manifest linking volume order, labels, feature rows, and split membership. Check that every evaluation split contains the classes required to compute AUC.
 - Record preprocessing, filtration bounds/stride/widths, channel order, random seed, command, and package versions. Both training scripts accept `--seed` and fit topology normalization on the training split.
 - Match the paper's dataset-specific protocol before comparing results. The example commands illustrate the interfaces; they are not complete reproductions of the paper's experiments.
-- Runtime and model performance depend on the dataset and hardware. End-to-end training is not verified by the documentation examples alone.
+- Runtime and model performance depend on the dataset and hardware. The synthetic checks below verify execution and selected correctness properties, not the paper's reported performance.
+
+## Tests and small training check
+
+From the repository root, run:
+
+```bash
+python -m unittest discover -s tests -v
+python scripts/smoke_train.py
+```
+
+The regression tests check the supervised contrastive objective and gradients against an independent calculation, correct image/topology pairing, and invariance to sample order. Labels follow the concatenated view order: all image samples, then all topology samples.
+
+The smoke check uses the actual R3D-18-based models on CPU, with four synthetic samples per train/validation/test split, 16 × 16 × 16 volumes, and one epoch each. It verifies parameter updates, finite held-out metrics, and checkpoint loading without downloading data or weights. Temporary arrays and checkpoints are removed afterward. See [validation notes](docs/validation.md) for the correction, checks, and recorded environment.
 
 ## Citation
 
