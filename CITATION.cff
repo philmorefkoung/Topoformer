@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the paper in preferred-citation."
+type: software
+title: "Topoformer: Topology-Infused Transformers for Medical Imaging"
+authors:
+  - family-names: Chakraborty
+    given-names: Sayoni
+  - family-names: Koung
+    given-names: Philmore
+  - family-names: Coskunuzer
+    given-names: Baris
+repository-code: "https://github.com/philmorefkoung/Topoformer"
+url: "https://proceedings.mlr.press/v297/chakraborty26a.html"
+keywords:
+  - topological data analysis
+  - medical imaging
+  - supervised contrastive learning
+  - volumetric classification
+preferred-citation:
+  type: conference-paper
+  title: "Topoformer: Topology-Infused Transformers for Medical Imaging"
+  authors:
+    - family-names: Chakraborty
+      given-names: Sayoni
+    - family-names: Koung
+      given-names: Philmore
+    - family-names: Coskunuzer
+      given-names: Baris
+  collection-title: "Proceedings of the Fifth Machine Learning for Health Symposium"
+  collection-type: proceedings
+  volume: 297
+  start: 23
+  end: 40
+  year: 2026
+  publisher:
+    name: PMLR
+  url: "https://proceedings.mlr.press/v297/chakraborty26a.html"
