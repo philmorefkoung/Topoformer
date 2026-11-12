@@ -467,7 +467,7 @@ def evaluate(model: nn.Module, data_loader: DataLoader, num_classes: int, device
 # Main
 # -----------------------------------------------------------------------------
 
-def train(cfg: Config) -> dict[str, float]:
+def train(cfg: Config) -> None:
     set_seed(cfg.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -567,7 +567,6 @@ def train(cfg: Config) -> dict[str, float]:
     if torch.cuda.is_available():
         torch.cuda.synchronize()
     print(f"\nTotal runtime: {time.perf_counter() - t0:.2f} s")
-    return test_metrics
 
 
 def parse_args() -> Config:
